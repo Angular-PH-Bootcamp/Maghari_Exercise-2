@@ -99,61 +99,67 @@ export class App {
       case '7':
       case '8':
       case '9':
-        this.allValues += key;
+        this.allValues.update(v => v + key);
         break;
+
       case '.':
         if (this.allValues.length <= 0) {
-          this.allValues += '0.'
+          this.allValues.set('0.')
         }
         if (!this.allValues.includes('.')) {
-          this.allValues += key;
+          this.allValues.update(v => v + key);
         }
         break;
+
       case '+':
       case '-':
       case 'x':
       case '/':
-        if(this.operator){
-          if(key === '-'){
-            if(this.allValues[0]!== '-'){
-              this.allValues = '-'+this.allValues;
+        if(this.operator()){
+          if (key === '-') {
+            if (this.allValues()[0] !== '-') {
+              this.allValues.update(v => '-' + v);
               break;
             }
           }
         }
         if (!this.operator) {
-          this.firstValue = +this.allValues;
-          this.allValues = '';
-          this.operator = key;
+          this.firstValue.set(+this.allValues());
+          this.allValues.set('');
+          this.operator.set(key);
         } else {
           if (this.allValues && this.allValues !== '-') {
-            this.firstValue = this.compute();
-            this.allValues = '';
+            this.firstValue.set(this.compute());
+            this.allValues.set('');
           }
-          this.operator = key;
+          this.operator.set(key);
         }
         break;
+
       case '=':
         if (this.firstValue && this.allValues && this.allValues !== '-') {
-          this.allValues = String(this.compute());
-          this.operator = '';
-          this.firstValue = 0;
+          this.allValues.set(String(this.compute()));
+          this.operator.set('');
+          this.firstValue.set(0);
         }
         break;
+
       case 'DEL':
         if (this.allValues) {
-          this.allValues = this.allValues.slice(0, this.allValues.length - 1);
+          this.allValues.update(v => v.slice(0, v.length - 1));
         }
         break;
+
       case 'RESET':
-        this.allValues = '';
-        this.operator = '';
-        this.firstValue = 0;
+        this.allValues.set('');
+        this.operator.set('');
+        this.firstValue.set(0);
         break;
+
       default:
         break;
     }
-    this.allValues = this.lengthChecker();
+    this.allValues.set(this.lengthChecker());
   }
 
   lengthChecker() {
